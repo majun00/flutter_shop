@@ -16,33 +16,34 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Container(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('美丽人间'),
-        ),
-        body: Container(
-            child: Column(
-          children: <Widget>[
-            TextField(
-              controller: typeController,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(10.0),
-                labelText: '类型',
-                helperText: '请输入你喜欢的类型',
-              ),
-              autofocus: false,
-            ),
-            RaisedButton(
-              onPressed: _choiceAction,
-              child: Text('选择完毕'),
-            ),
-            Text(
-              showText,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            )
-          ],
-        )),
-      ),
+          appBar: AppBar(
+            title: Text('美丽人间'),
+          ),
+          body: SingleChildScrollView(
+            child: Container(
+                child: Column(
+              children: <Widget>[
+                TextField(
+                  controller: typeController,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(10.0),
+                    labelText: '类型',
+                    helperText: '请输入你喜欢的类型',
+                  ),
+                  autofocus: false,
+                ),
+                RaisedButton(
+                  onPressed: _choiceAction,
+                  child: Text('选择完毕'),
+                ),
+                Text(
+                  showText,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                )
+              ],
+            )),
+          )),
     );
   }
 

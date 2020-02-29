@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import '../config/httpHeaders.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -70,9 +71,12 @@ class _HomePageState extends State<HomePage> {
   Future getHttp(String TypeText) async {
     try {
       Response response;
+      Dio dio = new Dio();
+      dio.options.headers = httpHeaders;
+      
       var data = {'name': TypeText};
 
-      response = await Dio().get('mockUrl', queryParameters: data);
+      response = await dio.get('mockUrl', queryParameters: data);
       return response.data;
     } catch (e) {
       return print(e);

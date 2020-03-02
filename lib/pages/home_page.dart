@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import '../config/httpHeaders.dart';
+import 'package:flutter_shop/config/httpHeaders.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -10,96 +10,51 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController typeController = TextEditingController();
-  String showText = '欢迎您来到美丽人间';
+  String showText = '暂无数据';
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Scaffold(
-          appBar: AppBar(
-            title: Text('美丽人间'),
+        appBar: AppBar(
+          title: Text('标题'),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              RaisedButton(
+                onPressed: _jike,
+                child: Text('按钮文案'),
+              ),
+              Text(showText)
+            ],
           ),
-          body: SingleChildScrollView(
-            child: Container(
-                child: Column(
-              children: <Widget>[
-                TextField(
-                  controller: typeController,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(10.0),
-                    labelText: '类型',
-                    helperText: '请输入你喜欢的类型',
-                  ),
-                  autofocus: false,
-                ),
-                RaisedButton(
-                  onPressed: _choiceAction,
-                  child: Text('选择完毕'),
-                ),
-                Text(
-                  showText,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                )
-              ],
-            )),
-          )),
+        ),
+      ),
     );
   }
 
-  void _choiceAction() {
-    print('开始选择你喜欢的类型...');
-    if (typeController.text.toString() == '') {
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('类型不能为空'),
-              ));
-    } else {
+  void _jike() {
+    print('start request...');
+    getHttp().then((val) {
       setState(() {
-        showText = 'mockData';
+        showText = val['data'].toString();
       });
-      // getHttp(typeController.text.toString()).then((res) {
-      //   setState(() {
-      //     showText = res['data'];
-      //   });
-      // });
-    }
+    });
   }
 
-  Future getHttp(String TypeText) async {
+  Future getHttp() async {
     try {
       Response response;
       Dio dio = new Dio();
-      dio.options.headers = httpHeaders;
-      
-      var data = {'name': TypeText};
 
-      response = await dio.get('mockUrl', queryParameters: data);
+      dio.options.headers = httpHeaders;
+      var params = {'test': 'test'};
+
+      response = await dio.get('https://time.geekbang.org/serv/v1/column/newAll', queryParameters: params);
       return response.data;
     } catch (e) {
-      return print(e);
+      print(e);
     }
   }
 }
-
-// class HomePage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     getHttp();
-
-//     return Scaffold(body: Center(child: Text('HomePage')));
-//   }
-
-//   void getHttp() async {
-//     try {
-//       Response response;
-//       response = await Dio().get(
-//           'https://www.easy-mock.com/mock/5c60131a4bed3a6342711498/baixing/dabaojian?name=大胸美女');
-//       print(response);
-//     } catch (e) {
-//       print(e);
-//     }
-//   }
-// }

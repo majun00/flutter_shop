@@ -3,6 +3,7 @@ import 'package:flutter_shop/service/service_method.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'dart:convert';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -23,17 +24,26 @@ class _HomePageState extends State<HomePage> {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             var data = json.decode(snapshot.data.toString());
-            List<Map> swiper = (data['data']['slides'] as List).cast();
-            List<Map> navigatorList = (data['data']['category'] as List).cast();
+            List<Map> swiper = (data['data']['slides'] as List).cast(); // 轮播列表
+            List<Map> navigatorList =
+                (data['data']['category'] as List).cast(); // 导航列表
             String advertesPicture =
                 data['data']['advertesPicture']['PICTURE_ADDRESS']; //广告图片
-            return Column(children: <Widget>[
-              SwiperDiy(
-                swiperDataList: swiper,
-              ),
-              TopNavigator(navigatorList: navigatorList),
-              AdBanner(advertesPicture: advertesPicture), //广告组件
-            ]);
+            String leaderImage = data['data']['shopInfo']['leaderImage']; //店长图片
+            String leaderPhone = data['data']['shopInfo']['leaderPhone']; //店长电话
+
+            return SingleChildScrollView(
+              child: Column(children: <Widget>[
+                SwiperDiy(
+                  swiperDataList: swiper,
+                ), // 首页轮播模块
+                TopNavigator(navigatorList: navigatorList), // 首页导航模块
+                AdBanner(advertesPicture: advertesPicture), // 广告模块
+                LeaderPhone(
+                    leaderImage: leaderImage,
+                    leaderPhone: leaderPhone), // 店长电话模块
+              ]),
+            );
           } else {
             return Center(child: Text('加载中...'));
           }
@@ -43,17 +53,16 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// 首页轮播组件
+// 首页轮播模块
 class SwiperDiy extends StatelessWidget {
+  final List swiperDataList; // 轮播列表
   const SwiperDiy({Key key, this.swiperDataList}) : super(key: key);
-
-  final List swiperDataList;
 
   @override
   Widget build(BuildContext context) {
-    print('设备宽度:${ScreenUtil.screenWidth}');
-    print('设备高度:${ScreenUtil.screenHeight}');
-    print('设备像素密度:${ScreenUtil.pixelRatio}');
+    // print('设备宽度:${ScreenUtil.screenWidth}');
+    // print('设备高度:${ScreenUtil.screenHeight}');
+    // print('设备像素密度:${ScreenUtil.pixelRatio}');
     return Container(
       height: ScreenUtil().setHeight(333),
       width: ScreenUtil().setWidth(750),
@@ -70,9 +79,9 @@ class SwiperDiy extends StatelessWidget {
   }
 }
 
+// 首页导航模块
 class TopNavigator extends StatelessWidget {
-  final List navigatorList;
-
+  final List navigatorList; // 导航列表
   const TopNavigator({Key key, this.navigatorList}) : super(key: key);
 
   Widget _gridViewItemUI(BuildContext content, item) {
@@ -107,8 +116,9 @@ class TopNavigator extends StatelessWidget {
   }
 }
 
+// 广告模块
 class AdBanner extends StatelessWidget {
-  final String advertesPicture;
+  final String advertesPicture; // 广告图片
   const AdBanner({Key key, this.advertesPicture}) : super(key: key);
 
   @override
@@ -116,5 +126,30 @@ class AdBanner extends StatelessWidget {
     return Container(
       child: Image.network(advertesPicture),
     );
+  }
+}
+
+// 店长电话模块
+class LeaderPhone extends StatelessWidget {
+  final String leaderImage; // 店长图片
+  final String leaderPhone; // 店长电话
+  const LeaderPhone({Key key, this.leaderImage, this.leaderPhone})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: InkWell(onTap: _launchUrl, child: Image.network(leaderImage)),
+    );
+  }
+
+  void _launchUrl() async {
+    String url = 'tel:' + leaderPhone;
+    print(url);
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

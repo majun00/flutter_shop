@@ -27,10 +27,11 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    var formData = {'lon': '115.02932', 'lat': '35.76189'};
     return Scaffold(
       appBar: AppBar(title: Text('百姓生活')),
       body: FutureBuilder(
-        future: getHomePageContent(),
+        future: request('homePageContext', formData: formData),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             var data = json.decode(snapshot.data.toString());
@@ -79,6 +80,7 @@ class _HomePageState extends State<HomePage>
                 FloorContent(
                   floorGoodsList: floor3,
                 ),
+                HotGoods(),
               ]),
             );
           } else {
@@ -323,6 +325,30 @@ class FloorContent extends StatelessWidget {
         },
         child: Image.network(goods['image']),
       ),
+    );
+  }
+}
+
+class HotGoods extends StatefulWidget {
+  HotGoods({Key key}) : super(key: key);
+
+  @override
+  _HotGoodsState createState() => _HotGoodsState();
+}
+
+class _HotGoodsState extends State<HotGoods> {
+  @override
+  void initState() {
+    super.initState();
+    request('homePageBelowConten', formData: 1).then((val) {
+      print(val);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: null,
     );
   }
 }

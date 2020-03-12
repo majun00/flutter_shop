@@ -4,6 +4,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'dart:convert';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -15,6 +16,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
   String homePageContent = '暂无数据';
+  int page = 1;
+  List<Map> hotGoodsList = [];
+  GlobalKey<RefreshFooterState> _footerKey =
+      new GlobalKey<RefreshFooterState>();
 
   @override
   bool get wantKeepAlive => true;
@@ -23,6 +28,7 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     print('initState');
+    // _getGoods();
   }
 
   @override
@@ -57,36 +63,146 @@ class _HomePageState extends State<HomePage>
             List<Map> floor3 =
                 (data['data']['floor3'] as List).cast(); //楼层1商品和图片
 
-            return SingleChildScrollView(
-              child: Column(children: <Widget>[
-                SwiperDiy(
-                  swiperDataList: swiper,
-                ), // 首页轮播模块
-                TopNavigator(navigatorList: navigatorList), // 首页导航模块
-                AdBanner(advertesPicture: advertesPicture), // 广告模块
-                LeaderPhone(
-                    leaderImage: leaderImage,
-                    leaderPhone: leaderPhone), // 店长电话模块
-                Recommend(recommendList: recommendList), // 商品推荐模块
-                FloorTitle(picture_address: floor1Title),
-                FloorContent(
-                  floorGoodsList: floor1,
-                ),
-                FloorTitle(picture_address: floor2Title),
-                FloorContent(
-                  floorGoodsList: floor2,
-                ),
-                FloorTitle(picture_address: floor3Title),
-                FloorContent(
-                  floorGoodsList: floor3,
-                ),
-                HotGoods(),
-              ]),
+            return EasyRefresh(
+              refreshFooter: ClassicsFooter(
+                key: _footerKey,
+                bgColor: Colors.white,
+                textColor: Colors.pink,
+                moreInfoColor: Colors.pink,
+                showMore: true,
+                noMoreText: '',
+                moreInfo: '加载中',
+                loadReadyText: '上拉加载......',
+              ),
+              child: ListView(
+                children: <Widget>[
+                  SwiperDiy(
+                    swiperDataList: swiper,
+                  ), // 首页轮播模块
+                  TopNavigator(navigatorList: navigatorList), // 首页导航模块
+                  AdBanner(advertesPicture: advertesPicture), // 广告模块
+                  LeaderPhone(
+                      leaderImage: leaderImage,
+                      leaderPhone: leaderPhone), // 店长电话模块
+                  Recommend(recommendList: recommendList), // 商品推荐模块
+                  FloorTitle(picture_address: floor1Title),
+                  FloorContent(
+                    floorGoodsList: floor1,
+                  ),
+                  FloorTitle(picture_address: floor2Title),
+                  FloorContent(
+                    floorGoodsList: floor2,
+                  ),
+                  FloorTitle(picture_address: floor3Title),
+                  FloorContent(
+                    floorGoodsList: floor3,
+                  ),
+                  _hotGoods()
+                ],
+              ),
+              loadMore: () async {
+                print('开始加载更多');
+                var formData = {'page': page};
+                await request('homePageBelowConten', formData: formData)
+                    .then((val) {
+                  var data = json.decode(val.toString());
+                  List<Map> newGoodsList = (data['data'] as List).cast();
+                  setState(() {
+                    hotGoodsList.addAll(newGoodsList);
+                    page++;
+                  });
+                });
+              },
             );
           } else {
             return Center(child: Text('加载中...'));
           }
         },
+      ),
+    );
+  }
+
+  // 火爆商品接口
+  // void _getGoods() {
+  //   var formData = {'page': page};
+  //   request('homePageBelowConten', formData: formData).then((val) {
+  //     var data = json.decode(val.toString());
+  //     List<Map> newGoodsList = (data['data'] as List).cast();
+  //     setState(() {
+  //       hotGoodsList.addAll(newGoodsList);
+  //       page++;
+  //     });
+  //   });
+  // }
+
+  // 火爆专区标题
+  Widget hotTitle = Container(
+    margin: EdgeInsets.only(top: 10.0),
+    padding: EdgeInsets.all(5.0),
+    alignment: Alignment.center,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: Border(bottom: BorderSide(width: 0.5, color: Colors.black12)),
+    ),
+    child: Text('火爆专区'),
+  );
+
+  // 火爆专区子项
+  Widget _wrapList() {
+    if (hotGoodsList.length != 0) {
+      List<Widget> listWidget = hotGoodsList.map((val) {
+        return InkWell(
+          onTap: () {
+            print('点击了火爆商品');
+          },
+          child: Container(
+              width: ScreenUtil().setWidth(320),
+              color: Colors.white,
+              padding: EdgeInsets.all(5.0),
+              margin: EdgeInsets.only(bottom: 3.0),
+              child: Column(
+                children: <Widget>[
+                  Image.network(
+                    val['image'],
+                    width: ScreenUtil().setWidth(375),
+                  ),
+                  Text(
+                    val['name'],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: Colors.pink, fontSize: ScreenUtil().setSp(26)),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Text('￥${val['mallPrice']}'),
+                      Text(
+                        '￥${val['price']}',
+                        style: TextStyle(
+                            color: Colors.black26,
+                            decoration: TextDecoration.lineThrough),
+                      )
+                    ],
+                  ),
+                ],
+              )),
+        );
+      }).toList();
+
+      return Wrap(
+        spacing: 2,
+        children: listWidget,
+      );
+    } else {
+      return Text('');
+    }
+  }
+
+  // 火爆专区组合
+  Widget _hotGoods() {
+    return Container(
+      child: Column(
+        children: <Widget>[hotTitle, _wrapList()],
       ),
     );
   }
@@ -123,6 +239,7 @@ class TopNavigator extends StatelessWidget {
   final List navigatorList; // 导航列表
   const TopNavigator({Key key, this.navigatorList}) : super(key: key);
 
+  // 导航项
   Widget _gridViewItemUI(BuildContext content, item) {
     return InkWell(
       onTap: () {
@@ -182,6 +299,7 @@ class LeaderPhone extends StatelessWidget {
     );
   }
 
+  // 拨号
   void _launchUrl() async {
     String url = 'tel:' + leaderPhone;
     print(url);
@@ -293,6 +411,7 @@ class FloorContent extends StatelessWidget {
     );
   }
 
+  // 第一层内容
   Widget _firstRow() {
     return Row(
       children: <Widget>[
@@ -307,6 +426,7 @@ class FloorContent extends StatelessWidget {
     );
   }
 
+  // 第二层内容
   Widget _othersGoods() {
     return Row(
       children: <Widget>[
@@ -316,6 +436,7 @@ class FloorContent extends StatelessWidget {
     );
   }
 
+  // 内容项
   Widget _goodsItem(Map goods) {
     return Container(
       width: ScreenUtil().setWidth(375),
@@ -325,30 +446,6 @@ class FloorContent extends StatelessWidget {
         },
         child: Image.network(goods['image']),
       ),
-    );
-  }
-}
-
-class HotGoods extends StatefulWidget {
-  HotGoods({Key key}) : super(key: key);
-
-  @override
-  _HotGoodsState createState() => _HotGoodsState();
-}
-
-class _HotGoodsState extends State<HotGoods> {
-  @override
-  void initState() {
-    super.initState();
-    request('homePageBelowConten', formData: 1).then((val) {
-      print(val);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: null,
     );
   }
 }

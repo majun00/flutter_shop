@@ -20,6 +20,6 @@ Future request(url, {formData}) async {
       throw Exception('服务器异常');
     }
   } catch (e) {
-    return print('ERROR:======>${e}');
+    return print('ERROR:======>$e');
   }
 }

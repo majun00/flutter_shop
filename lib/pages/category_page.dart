@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provide/provide.dart';
 import 'dart:convert';
 import '../service/service_method.dart';
 import '../model/category.dart';
+import '../provide/child_category.dart';
 
 class CategoryPage extends StatefulWidget {
   CategoryPage({Key key}) : super(key: key);
@@ -42,6 +44,7 @@ class LeftCategoryNav extends StatefulWidget {
 
 class _LeftCategoryNavState extends State<LeftCategoryNav> {
   List list = [];
+  var listIndex = 0; // 索引
 
   @override
   void initState() {
@@ -77,13 +80,20 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
 
   // 左侧导航菜单项
   Widget _leftInkWell(int index) {
+    bool isClick = (listIndex == index) ? true : false;
     return InkWell(
-        onTap: () {},
+        onTap: () {
+          setState(() {
+            listIndex = index;
+          });
+          var childList = list[index].bxMallSubDto;
+          Provide.value<ChildCategory>(context).getChildCategory(childList);
+        },
         child: Container(
           height: ScreenUtil().setHeight(100),
           padding: EdgeInsets.only(left: 10, top: 20),
           decoration: BoxDecoration(
-              color: Colors.white,
+              color: isClick ? Colors.black26 : Colors.white,
               border:
                   Border(bottom: BorderSide(width: 1, color: Colors.black12))),
           child: Text(
@@ -105,31 +115,35 @@ class _RightCategoryNavState extends State<RightCategoryNav> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Container(
-      height: ScreenUtil().setHeight(80),
-      width: ScreenUtil().setWidth(570),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(bottom: BorderSide(width: 1, color: Colors.black12))),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: list.length,
-        itemBuilder: (BuildContext context, int index) {
-          return _rightInkWell(list[index]);
-        },
-      ),
+    return Container(child: Provide<ChildCategory>(
+      builder: (context, child, childCategory) {
+        return Container(
+          height: ScreenUtil().setHeight(80),
+          width: ScreenUtil().setWidth(570),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              border:
+                  Border(bottom: BorderSide(width: 1, color: Colors.black12))),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: childCategory.childCategoryList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return _rightInkWell(childCategory.childCategoryList[index]);
+            },
+          ),
+        );
+      },
     ));
   }
 
   // 右侧小类类别项
-  Widget _rightInkWell(String item) {
+  Widget _rightInkWell(BxMallSubDto item) {
     return InkWell(
         onTap: () {},
         child: Container(
             padding: EdgeInsets.fromLTRB(5.0, 10.0, 5.0, 10.0),
             child: Text(
-              item,
+              item.mallSubName,
               style: TextStyle(fontSize: ScreenUtil().setSp(28)),
             )));
   }

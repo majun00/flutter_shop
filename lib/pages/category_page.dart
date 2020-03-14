@@ -3,8 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provide/provide.dart';
 import 'dart:convert';
 import '../service/service_method.dart';
-import '../model/category.dart';
 import '../provide/child_category.dart';
+import '../model/category.dart';
+import '../model/categoryGoodsList.dart';
 
 class CategoryPage extends StatefulWidget {
   CategoryPage({Key key}) : super(key: key);
@@ -176,7 +177,8 @@ class _CategoryGoodsListState extends State<CategoryGoodsList> {
     var data = {'categoryId': '4', 'categorySubId': "", 'page': 1};
     await request('getMallGoods', formData: data).then((val) {
       var data = json.decode(val.toString());
-      print(data);
+      CategoryGoodsListModel goodsList = CategoryGoodsListModel.fromJson(data);
+      print(goodsList.data[0].goodsName);
     });
   }
 }

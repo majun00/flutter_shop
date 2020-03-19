@@ -169,7 +169,8 @@ class _RightCategoryNavState extends State<RightCategoryNav> {
         : false);
     return InkWell(
         onTap: () {
-          Provide.value<ChildCategory>(context).changeChildIndex(index);
+          Provide.value<ChildCategory>(context)
+              .changeChildIndex(index, item.mallSubId);
           _getGoodsList(item.mallSubId);
         },
         child: Container(

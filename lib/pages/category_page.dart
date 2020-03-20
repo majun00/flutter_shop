@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provide/provide.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'dart:convert';
+import 'package:provide/provide.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../service/service_method.dart';
 import '../provide/child_category.dart';
 import '../provide/category_goods_list.dart';
@@ -11,8 +12,6 @@ import '../model/category.dart';
 import '../model/categoryGoodsList.dart';
 
 class CategoryPage extends StatefulWidget {
-  CategoryPage({Key key}) : super(key: key);
-
   @override
   _CategoryPageState createState() => _CategoryPageState();
 }
@@ -40,8 +39,6 @@ class _CategoryPageState extends State<CategoryPage> {
 
 // 左侧导航菜单
 class LeftCategoryNav extends StatefulWidget {
-  LeftCategoryNav({Key key}) : super(key: key);
-
   @override
   _LeftCategoryNavState createState() => _LeftCategoryNavState();
 }
@@ -339,6 +336,14 @@ class _CategoryGoodsListState extends State<CategoryGoodsList> {
       var data = json.decode(val.toString());
       CategoryGoodsListModel goodsList = CategoryGoodsListModel.fromJson(data);
       if (goodsList.data == null) {
+        Fluttertoast.showToast(
+            msg: '没有更多了',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 1,
+            backgroundColor: Colors.pink,
+            textColor: Colors.white,
+            fontSize: 16.0);
         Provide.value<ChildCategory>(context).changeNoMoreText('没有更多了');
       } else {
         Provide.value<CategoryGoodsListProvide>(context)

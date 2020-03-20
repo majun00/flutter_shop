@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_shop/service/service_method.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
 import 'dart:convert';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../routers/application.dart';
+import '../service/service_method.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
-
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -154,6 +153,7 @@ class _HomePageState extends State<HomePage>
         return InkWell(
           onTap: () {
             print('点击了火爆商品');
+            Application.router.navigateTo(context, '/detail?id=${val['goodsId']}');
           },
           child: Container(
               width: ScreenUtil().setWidth(320),

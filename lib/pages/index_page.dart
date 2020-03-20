@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import './cart_page.dart';
-import './category_page.dart';
-import './home_page.dart';
-import './member_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import './home_page.dart';
+import './category_page.dart';
+import './cart_page.dart';
+import './member_page.dart';
 
 class IndexPage extends StatefulWidget {
-  IndexPage({Key key}) : super(key: key);
-
   @override
   _IndexPageState createState() => _IndexPageState();
 }

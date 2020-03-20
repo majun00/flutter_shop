@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'dart:io';
-import 'package:flutter_shop/config/service_url.dart';
+import '../config/service_url.dart';
 
 Future request(url, {formData}) async {
   try {

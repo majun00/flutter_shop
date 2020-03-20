@@ -24,7 +24,7 @@ class DetailsPage extends StatelessWidget {
           if (snapshot.hasData) {
             return Container(
                 child: Column(
-              children: <Widget>[],
+              children: <Widget>[Text(goodsId)],
             ));
           } else {
             return Text('加载中......');

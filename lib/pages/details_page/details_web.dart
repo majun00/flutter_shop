@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provide/provide.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../provide/details_info.dart';
 
 class DetailsWeb extends StatelessWidget {
@@ -11,10 +12,24 @@ class DetailsWeb extends StatelessWidget {
         .data
         .goodInfo
         .goodsDetail;
-    return Container(
-      child: Html(
-        data: goodsDetail,
-      ),
+    return Provide<DetailsInfoProvide>(
+      builder: (context, child, val) {
+        var isLeft = Provide.value<DetailsInfoProvide>(context).isLeft;
+        if (isLeft) {
+          return Container(
+            child: Html(
+              data: goodsDetail,
+            ),
+          );
+        } else {
+          return Container(
+            width: ScreenUtil().setWidth(750),
+            padding: EdgeInsets.all(10.0),
+            alignment: Alignment.center,
+            child: Text('暂时没有评论'),
+          );
+        }
+      },
     );
   }
 }

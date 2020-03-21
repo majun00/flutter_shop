@@ -5,7 +5,10 @@ import '../model/details.dart';
 
 class DetailsInfoProvide with ChangeNotifier {
   DetailsModel goodsInfo = null;
+  bool isLeft = true;
+  bool isRight = false;
 
+  // 获取商品详细信息
   getGoodsInfo(String id) {
     var formData = {'goodId': id};
     request('getGoodDetailById', formData: formData).then((val) {
@@ -14,5 +17,17 @@ class DetailsInfoProvide with ChangeNotifier {
       print(responseData);
       notifyListeners();
     });
+  }
+
+  // 改变tabBar的状态
+  changeLeftAndRight(String changeState) {
+    if (changeState == 'left') {
+      isLeft = true;
+      isRight = false;
+    } else {
+      isLeft = false;
+      isRight = true;
+    }
+    notifyListeners();
   }
 }

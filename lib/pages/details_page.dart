@@ -5,6 +5,7 @@ import './details_page/details_top_area.dart';
 import './details_page/details_explain.dart';
 import './details_page/details_tabbar.dart';
 import './details_page/details_web.dart';
+import './details_page/details_bottom.dart';
 
 class DetailsPage extends StatelessWidget {
   final String goodsId;
@@ -28,15 +29,22 @@ class DetailsPage extends StatelessWidget {
         future: _getBackInfo(context),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
-            return Container(
-              child: ListView(
-                children: <Widget>[
-                  DetailsTopArea(),
-                  DetailsExplain(),
-                  DetailsTabbar(),
-                  DetailsWeb(),
-                ],
-              ),
+            return Stack(
+              children: <Widget>[
+                ListView(
+                  children: <Widget>[
+                    DetailsTopArea(),
+                    DetailsExplain(),
+                    DetailsTabbar(),
+                    DetailsWeb(),
+                  ],
+                ),
+                Positioned(
+                  left: 0,
+                  bottom: 0,
+                  child: DetailsBottom(),
+                ),
+              ],
             );
           } else {
             return Text('加载中......');

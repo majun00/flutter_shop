@@ -16,13 +16,18 @@ class CartPage extends StatelessWidget {
         future: _getCartInfo(context),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           List cartList = Provide.value<CartProvide>(context).cartList;
-          if (snapshot.hasData) {
+          if (snapshot.hasData && cartList != null) {
             return Stack(
               children: <Widget>[
-                ListView.builder(
-                  itemCount: cartList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return CartItem(cartList[index]);
+                Provide<CartProvide>(
+                  builder: (context, child, val) {
+                    cartList = Provide.value<CartProvide>(context).cartList;
+                    return ListView.builder(
+                      itemCount: cartList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return CartItem(cartList[index]);
+                      },
+                    );
                   },
                 ),
                 Positioned(

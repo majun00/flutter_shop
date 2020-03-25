@@ -22,20 +22,50 @@ class DetailsBottom extends StatelessWidget {
       color: Colors.white,
       child: Row(
         children: <Widget>[
-          InkWell(
-            onTap: () {
-              Provide.value<CurrentIndexProvide>(context).changeIndex(2);
-              Navigator.pop(context);
-            },
-            child: Container(
-              width: ScreenUtil().setWidth(110),
-              alignment: Alignment.center,
-              child: Icon(
-                Icons.shopping_cart,
-                size: 35,
-                color: Colors.red,
+          Stack(
+            children: <Widget>[
+              InkWell(
+                onTap: () {
+                  Provide.value<CurrentIndexProvide>(context).changeIndex(2);
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  width: ScreenUtil().setWidth(110),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.shopping_cart,
+                    size: 35,
+                    color: Colors.red,
+                  ),
+                ),
               ),
-            ),
+              Provide<CartProvide>(builder: (context, child, val) {
+                int goodsCount =
+                    Provide.value<CartProvide>(context).allGoodsCount;
+                return Positioned(
+                  top: 0,
+                  right: 10,
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(6, 3, 6, 3),
+                    decoration: BoxDecoration(
+                      color: Colors.pink,
+                      border: Border.all(
+                        width: 2,
+                        color: Colors.white,
+                      ),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Text(
+                      '${goodsCount}',
+                      style: TextStyle(
+                        fontSize: ScreenUtil().setSp(22),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                );
+              })
+            ],
           ),
           InkWell(
             onTap: () {
